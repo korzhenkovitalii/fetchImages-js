@@ -1,6 +1,7 @@
 import { fetchImage } from './fetchImage';
 import Notiflix from 'notiflix';
 import SimpleLightbox from 'simplelightbox';
+// Дополнительный импорт стилей
 import 'simplelightbox/dist/simple-lightbox.min.css';
 
 const refs = {
@@ -12,9 +13,7 @@ const refs = {
 function renderGallery(array) {
   const markup = array
     .map(
-      item => `<div class="photo-card">
-        <img src="${item.webformatURL}" alt="item.tags" loading="lazy" />
-        <div class="info">
+      item => `<div class="photo-card"><a href="${item.largeImageURL}"><img src="${item.webformatURL}" class="card" alt="${item.tags}" loading="lazy"/></a><div class="info">
           <p>
             <b>Likes: </b>${item.likes}
           </p>

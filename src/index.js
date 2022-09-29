@@ -13,21 +13,8 @@ const refs = {
 function renderGallery(array) {
   const markup = array
     .map(
-      item => `<div class="photo-card"><a href="${item.largeImageURL}"><img src="${item.webformatURL}" class="card" alt="${item.tags}" loading="lazy"/></a><div class="info">
-          <p>
-            <b>Likes: </b>${item.likes}
-          </p>
-          <p>
-            <b>Views: </b>${item.views}
-          </p>
-          <p>
-            <b>Comments: </b>${item.comments}
-          </p>
-          <p>
-            <b>Downloads: </b>${item.downloads}
-          </p>
-        </div>
-      </div>`
+      item =>
+        `<div class="photo-card"><a href="${item.largeImageURL}"><img src="${item.webformatURL}" class="card" alt="${item.tags}" loading="lazy"/></a><div class="info"><div><p>Likes: </p><p>${item.likes}</p></div><div><p>Views: </p><p>${item.views}</p></div><div><p>Comments: </p><p>${item.comments}</p></div><div><p>Downloads: </p> <p>${item.downloads}</p></div></div></div>`
     )
     .join('');
   refs.gallery.insertAdjacentHTML('beforeend', markup);
@@ -39,9 +26,9 @@ let lightbox = new SimpleLightbox('.photo-card a', {
   captionDelay: 250,
 });
 
-let page = 1;
+let page;
+let per_page = 40;
 let searchQuery = '';
-let hits = 0;
 
 refs.searchForm.addEventListener('submit', onFormSubmit);
 refs.loadMoreBtn.addEventListener('click', clickLoadMoreBtn);
@@ -49,6 +36,7 @@ refs.loadMoreBtn.addEventListener('click', clickLoadMoreBtn);
 async function onFormSubmit(event) {
   event.preventDefault();
   searchQuery = event.currentTarget.searchQuery.value;
+  page = 1;
 
   if (searchQuery === '') {
     return;
@@ -56,8 +44,14 @@ async function onFormSubmit(event) {
 
   const response = await fetchImage(searchQuery, page);
   console.log(response);
-  if (response.total > 0) {
+
+  //Условия появления кнопки 'Показать еще'
+  refs.loadMoreBtn.classList.add('hidden');
+  if (response.total > per_page) {
     refs.loadMoreBtn.classList.remove('hidden');
+  }
+
+  if (response.total > 0) {
     Notiflix.Notify.success(`Hooray! We found ${response.total} images.`);
 
     refs.gallery.innerHTML = '';
@@ -68,7 +62,6 @@ async function onFormSubmit(event) {
     Notiflix.Notify.failure(
       'Sorry, there are no images matching your search query. Please try again.'
     );
-    refs.loadMoreBtn.classList.add('hidden');
   }
 }
 
@@ -77,8 +70,8 @@ async function clickLoadMoreBtn() {
   const response = await fetchImage(searchQuery, page);
   renderGallery(response.hits);
   lightbox.refresh();
-  hits += response.total;
-  if (hits === response.total) {
+  console.log(response.hits.length);
+  if (response.hits.length < per_page) {
     refs.loadMoreBtn.classList.add('hidden');
     Notiflix.Notify.warning(
       "We're sorry, but you've reached the end of search results."

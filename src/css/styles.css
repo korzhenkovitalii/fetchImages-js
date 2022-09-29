@@ -2,10 +2,15 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  font-size: 16px;
 }
 
 .hidden {
   display: none;
+}
+p {
+  margin: 0;
+  padding: 0;
 }
 
 img {
@@ -30,7 +35,6 @@ img {
   left: 0;
   background-color: blue;
   padding: 10px 0;
-  font-size: 16px;
 }
 .search-form__input {
   width: 300px;
@@ -82,4 +86,11 @@ img {
   border: none;
   border-radius: 2px;
   margin-top: 10px;
+}
+.info > div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-right: 10px;
 }
